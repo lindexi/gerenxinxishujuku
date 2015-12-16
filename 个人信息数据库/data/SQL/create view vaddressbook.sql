@@ -1,0 +1,7 @@
+
+
+CREATE VIEW Vaddressbook(id,name,contact,caddress,city,comment)
+as
+SELECT addressBook.id,CONTACTS.NAME,CONTACTS.CONTACT,CONTACTS.CADDRESS,CONTACTS.CITY,CONTACTS.COMMENT
+FROM addressBook,CONTACTS
+WHERE addressBook.CONTACTSID=CONTACTS.ID;
