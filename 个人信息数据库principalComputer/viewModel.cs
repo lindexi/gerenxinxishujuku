@@ -18,8 +18,7 @@ namespace 个人信息数据库principalComputer
             //      {
             //          reminder = temp;
             //      }
-            //  });
-            _model = new model.model();
+            //  });        
             _model.PropertyChanged += _model_PropertyChanged;
             reminder = "上位机";
         }
@@ -36,11 +35,29 @@ namespace 个人信息数据库principalComputer
             set;
             get;
         }
+
+        /// <summary>
+        /// 数据库ip
+        /// </summary>
+        public string DataSource
+        {
+            set;
+            get;
+        } = "QQLINDEXI\\SQLEXPRESS";
+        /// <summary>
+        /// 数据库名
+        /// </summary>
+        public string InitialCatalog
+        {
+            set;
+            get;
+        } = "grxx";
+
         private model.model _model
         {
             set;
             get;
-        }
+        } = new model.model();
 
         private void _model_PropertyChanged(object sender , System.ComponentModel.PropertyChangedEventArgs e)
         {
