@@ -10,16 +10,7 @@ namespace 个人信息数据库principalComputer
     public class viewModel : notify_property
     {
         public viewModel()
-        {
-            //_principal_computer = new principal_Computer(str =>
-            //  {
-            //      string temp = str.Trim('\0' , ' ');
-            //      if (!string.IsNullOrEmpty(temp))
-            //      {
-            //          reminder = temp;
-            //      }
-            //  });
-            _model = new model.model();
+        {                
             _model.PropertyChanged += _model_PropertyChanged;
             reminder = "上位机";
         }
@@ -29,18 +20,41 @@ namespace 个人信息数据库principalComputer
 
         }
 
-        //private principal_Computer _principal_computer;
-        public System.Collections.ObjectModel.ObservableCollection<caddressBook>
-         addressBook
+        /// <summary>
+        /// 数据库ip
+        /// </summary>
+        public string DataSource
         {
-            set;
-            get;
+            set
+            {
+                _model.DataSource = value;
+                OnPropertyChanged();
+            }
+            get
+            {
+                return _model.DataSource;
+            }
         }
+        /// <summary>
+        /// 数据库名
+        /// </summary>
+        public string InitialCatalog
+        {
+            set
+            {
+                _model.InitialCatalog = value;
+            }
+            get
+            {
+                return _model.InitialCatalog;
+            }
+        } 
+
         private model.model _model
         {
             set;
             get;
-        }
+        } = new model.model();
 
         private void _model_PropertyChanged(object sender , System.ComponentModel.PropertyChangedEventArgs e)
         {
