@@ -41,9 +41,16 @@ namespace 个人信息数据库principalComputer
         /// </summary>
         public string DataSource
         {
-            set;
-            get;
-        } = "QQLINDEXI\\SQLEXPRESS";
+            set
+            {
+                _model.DataSource = value;
+                OnPropertyChanged();
+            }
+            get
+            {
+                return _model.DataSource;
+            }
+        }
         /// <summary>
         /// 数据库名
         /// </summary>
