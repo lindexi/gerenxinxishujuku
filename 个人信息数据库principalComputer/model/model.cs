@@ -76,6 +76,43 @@ namespace 个人信息数据库principalComputer.model
             //addmemorandum(memorandum);
         }
 
+
+        public void lianjie()
+        {
+            bool finish = true;
+            string strsql;
+            try
+            {
+                 strsql= $"Data Source={DataSource};Integrated Security=True";
+                using (SqlConnection sql = new SqlConnection(strsql))
+                {
+                    sql.Open();
+                }
+                reminder = "可以连接";
+            }
+            catch 
+            {
+                reminder = "数据库ip错误";
+                finish = false;             
+            }
+
+            //判断数据库存在
+            if (finish)
+            {
+                strsql = "if exists(select * from sysdatabases where name= '"+InitialCatalog+" ')  select  1 as id  else  select 0 as id;";
+                strsql=  write(strsql);
+                if (string.Equals(strsql , "1"))
+                {
+                    return;
+                }
+                //
+                strsql = "create database grxx on primary( name='"+InitialCatalog+"',filename='C:\Program Files\Microsoft SQL Server\MSSQL12.SQLEXPRESS\MSSQL\DATA\grxx.mdf',size=5MB,filegrowth=10MB,maxsize=100MB)log on(name='"+InitialCatalog+"_log',filename='C:\Program Files\Microsoft SQL Server\MSSQL12.SQLEXPRESS\MSSQL\DATA\grxx.ldf',size=3MB,filegrowth=3%,maxsize=20MB);";
+                write(strsql);
+
+            }
+
+        }
+
         //public void add<T>(T obj)
         //{
         //    string temp = typeof(T).ToString();
@@ -164,9 +201,9 @@ namespace 个人信息数据库principalComputer.model
                             {
                                 id = DBNullstring<int>(read[id]) ,
                                 MTIME = DBNullstring<DateTime>(read[MTIME]) ,
-                                PLACE = DBNullstring<string>(read[PLACE]),
-                                incident=DBNullstring<string>(read[INCIDENT]),
-                                CONTACTSID=DBNullstring<string>(read[CONTACTSID])
+                                PLACE = DBNullstring<string>(read[PLACE]) ,
+                                incident = DBNullstring<string>(read[INCIDENT]) ,
+                                CONTACTSID = DBNullstring<string>(read[CONTACTSID])
                             });
                             //diary.Add(new cdiary()
                             //{    
@@ -234,9 +271,9 @@ namespace 个人信息数据库principalComputer.model
                                 //incident = read.GetString(INCIDENTindex) ,
                                 //CONTACTSID = read.GetString(CONTACTSIDindex)
                                 id = id ,
-                                MTIME = MTIME,//.Trim() ,
-                                PLACE = PLACE,//.Trim() ,
-                                incident = INCIDENT,//.Trim() ,
+                                MTIME = MTIME ,//.Trim() ,
+                                PLACE = PLACE ,//.Trim() ,
+                                incident = INCIDENT ,//.Trim() ,
                                 CONTACTSID = CONTACTSID//.Trim()
                             });
                         }
@@ -270,7 +307,7 @@ SELECT [property].[id]
   WHERE [property].CONTACTSID IS NULL;
 */
             string strsql = $"{usesql}{line} SELECT [{PROPERTY}].[id],[terminal],[PMONEY],[MTIME],{contacts}.NAME AS NAME FROM [dbo].[{PROPERTY}],CONTACTS  WHERE [{PROPERTY}].CONTACTSID={contacts}.ID{line}UNION{line} SELECT [{PROPERTY}].[id],[terminal],[PMONEY],[MTIME],NULL AS NAME  FROM [{PROPERTY}] WHERE [{PROPERTY}].CONTACTSID IS NULL;";
-            ObservableCollection<cproperty> property = new ObservableCollection<cproperty>();            
+            ObservableCollection<cproperty> property = new ObservableCollection<cproperty>();
             using (SqlConnection sql = new SqlConnection(connect))
             {
                 sql.Open();
@@ -286,9 +323,9 @@ SELECT [property].[id]
                             {
                                 id = DBNullstring<int>(read["id"]) ,
                                 terminal = DBNullstring<string>(read["terminal"]) ,
-                                PMONEY = DBNullstring<decimal>(read["PMONEY"]),
-                                MTIME=DBNullstring<DateTime>(read["MTIME"]),
-                                CONTACTSID=DBNullstring<string>(read["NAME"])
+                                PMONEY = DBNullstring<decimal>(read["PMONEY"]) ,
+                                MTIME = DBNullstring<DateTime>(read["MTIME"]) ,
+                                CONTACTSID = DBNullstring<string>(read["NAME"])
                             });
                         }
                     }
@@ -367,7 +404,7 @@ SELECT [property].[id]
             strsql = $"insert into {addressBook}(CONTACTSID) values( '{id}');";
             write(strsql);
         }
-       
+
 
         /// <summary>
         /// 删除通讯录
@@ -486,7 +523,7 @@ SELECT [property].[id]
             const string contacts = "CONTACTS";
             string strsql;
             string id;
-            
+
             strsql = $"{usesql} SELECT ID FROM {contacts} WHERE NAME='{name}';";
             id = write(strsql);
             if (string.IsNullOrEmpty(id))
@@ -594,7 +631,7 @@ SELECT [property].[id]
                             }
                             catch
                             {
-                                
+
                             }
                         }
                     }
@@ -885,7 +922,7 @@ SELECT [property].[id]
                     ddiary(diary);
                     break;
                 case ecommand.newdiary:
-                    diary= Deserialize<cdiary>(str);
+                    diary = Deserialize<cdiary>(str);
                     newdiary(diary);
                     break;
                 case ecommand.addmemorandum:
