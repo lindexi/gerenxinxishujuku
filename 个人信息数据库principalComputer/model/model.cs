@@ -100,15 +100,77 @@ namespace 个人信息数据库principalComputer.model
             if (finish)
             {
                 strsql = "if exists(select * from sysdatabases where name= '"+InitialCatalog+" ')  select  1 as id  else  select 0 as id;";
-                strsql=  write(strsql);
+                using (SqlConnection sql = new SqlConnection($"Data Source={DataSource};Integrated Security=True"))
+                {
+                    sql.Open();
+                    using (SqlCommand cmd = new SqlCommand(strsql , sql))
+                    {
+                        using (SqlDataReader read = cmd.ExecuteReader())
+                        {
+                            try
+                            {
+                                if (!read.HasRows)
+                                    strsql= null;
+                                const string id = "id";
+                                int idindex = read.GetOrdinal(id);
+                                while (read.Read())
+                                {
+                                    strsql = read.GetDecimal(0).ToString();
+                                }
+                            }
+                            catch
+                            {
+                                try
+                                {
+                                    strsql = DBNullstring<int>(read["id"]);
+                                }
+                                catch
+                                {
+
+                                }
+                            }
+                        }
+                    }
+                }
                 if (string.Equals(strsql , "1"))
                 {
                     return;
                 }
+
                 //
-                strsql = "create database grxx on primary( name='"+InitialCatalog+"',filename='C:\Program Files\Microsoft SQL Server\MSSQL12.SQLEXPRESS\MSSQL\DATA\grxx.mdf',size=5MB,filegrowth=10MB,maxsize=100MB)log on(name='"+InitialCatalog+"_log',filename='C:\Program Files\Microsoft SQL Server\MSSQL12.SQLEXPRESS\MSSQL\DATA\grxx.ldf',size=3MB,filegrowth=3%,maxsize=20MB);";
+                strsql = "create database "+InitialCatalog+" on primary( name='"+InitialCatalog+@"',filename='"+ AppDomain.CurrentDomain.BaseDirectory + InitialCatalog+".mdf',size=5MB,filegrowth=10MB,maxsize=100MB)log on(name='"+InitialCatalog+@"_log',filename='" + AppDomain.CurrentDomain.BaseDirectory + InitialCatalog +".ldf',size=3MB,filegrowth=3%,maxsize=20MB);";
+
+                using (SqlConnection sql = new SqlConnection($"Data Source={DataSource};Integrated Security=True"))
+                {
+                    sql.Open();
+                    using (SqlCommand cmd = new SqlCommand(strsql , sql))
+                    {
+                        cmd.ExecuteReader();                      
+                    }
+                }
+
+                strsql = "use " + InitialCatalog + ";" + "CREATE TABLE CONTACTS (ID int NOT NULL IDENTITY (1, 1) PRIMARY KEY, NAME CHAR(10) NOT NULL, CONTACT CHAR(10), CADDRESS VARCHAR(50), CITY VARCHAR(20), COMMENT VARCHAR(100));";
                 write(strsql);
 
+                strsql = "use " + InitialCatalog + ";" + "CREATE TABLE addressBook (id int NOT NULL IDENTITY (1, 1) PRIMARY KEY, CONTACTSID INT NOT NULL, FOREIGN KEY (CONTACTSID) REFERENCES CONTACTS(ID));";
+                write(strsql);
+
+                strsql = "use " + InitialCatalog + ";" + "CREATE TABLE diary (id int NOT NULL IDENTITY (1, 1) PRIMARY KEY, MTIME DATE, PLACE VARCHAR(50), INCIDENT VARCHAR(100) NOT NULL, CONTACTSID INT ,  FOREIGN KEY (CONTACTSID) REFERENCES CONTACTS(ID));";
+                write(strsql);
+
+                strsql = "use " + InitialCatalog + ";" + "CREATE TABLE memorandum (id int NOT NULL IDENTITY (1, 1) PRIMARY KEY, MTIME DATE , PLACE VARCHAR(50), INCIDENT VARCHAR(100) NOT NULL, CONTACTSID INT , FOREIGN KEY (CONTACTSID) REFERENCES CONTACTS(ID));";
+                write(strsql);
+
+                strsql = "use " + InitialCatalog + ";" + "CREATE TABLE property (id int NOT NULL IDENTITY (1, 1) PRIMARY KEY, terminal VARCHAR(100), PMONEY MONEY NOT NULL, MTIME DATE, CONTACTSID INT , FOREIGN KEY (CONTACTSID) REFERENCES CONTACTS(ID));";
+                write(strsql);
+
+                foreach (var t in lajiaddressBook())
+                {
+                    addaddressBook(t);
+                }
+                lajidiary();
+                lajimemorandum();
+                lajiproperty();
             }
 
         }
