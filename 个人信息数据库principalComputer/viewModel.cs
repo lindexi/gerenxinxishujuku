@@ -10,8 +10,7 @@ namespace 个人信息数据库principalComputer
     public class viewModel : notify_property
     {
         public viewModel()
-        {                
->>>>>>> master
+        {
             _model.PropertyChanged += _model_PropertyChanged;
             reminder = "上位机";
         }
@@ -50,7 +49,6 @@ namespace 个人信息数据库principalComputer
                 return _model.InitialCatalog;
             }
         } 
->>>>>>> master
 
         private model.model _model
         {
