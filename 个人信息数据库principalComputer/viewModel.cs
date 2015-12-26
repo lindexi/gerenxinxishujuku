@@ -10,15 +10,8 @@ namespace 个人信息数据库principalComputer
     public class viewModel : notify_property
     {
         public viewModel()
-        {
-            //_principal_computer = new principal_Computer(str =>
-            //  {
-            //      string temp = str.Trim('\0' , ' ');
-            //      if (!string.IsNullOrEmpty(temp))
-            //      {
-            //          reminder = temp;
-            //      }
-            //  });        
+        {                
+>>>>>>> master
             _model.PropertyChanged += _model_PropertyChanged;
             reminder = "上位机";
         }
@@ -26,14 +19,6 @@ namespace 个人信息数据库principalComputer
         public void ce()
         {
 
-        }
-
-        //private principal_Computer _principal_computer;
-        public System.Collections.ObjectModel.ObservableCollection<caddressBook>
-         addressBook
-        {
-            set;
-            get;
         }
 
         /// <summary>
@@ -56,9 +41,16 @@ namespace 个人信息数据库principalComputer
         /// </summary>
         public string InitialCatalog
         {
-            set;
-            get;
-        } = "grxx";
+            set
+            {
+                _model.InitialCatalog = value;
+            }
+            get
+            {
+                return _model.InitialCatalog;
+            }
+        } 
+>>>>>>> master
 
         private model.model _model
         {
