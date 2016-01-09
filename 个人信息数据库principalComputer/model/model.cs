@@ -13,12 +13,12 @@ namespace 个人信息数据库principalComputer.model
             ran = new Random();
             _principal_computer = new principal_Computer(str =>
               {
-                  string temp = str.Trim('\0' , ' ');
+                  string temp = str.Trim('\0', ' ');
                   if (!string.IsNullOrEmpty(temp))
                   {
                       reminder = temp;
                   }
-              } , implement);
+              }, implement);
 
             ce();
         }
@@ -30,7 +30,7 @@ namespace 个人信息数据库principalComputer.model
         {
             set;
             get;
-        } = "QQLINDEXI\\SQLEXPRESS";
+        } = "SQLEXPRESS";
         /// <summary>
         /// 数据库名
         /// </summary>
@@ -83,34 +83,34 @@ namespace 个人信息数据库principalComputer.model
             string strsql;
             try
             {
-                 strsql= $"Data Source={DataSource};Integrated Security=True";
+                strsql = $"Data Source={DataSource};Integrated Security=True";
                 using (SqlConnection sql = new SqlConnection(strsql))
                 {
                     sql.Open();
                 }
                 reminder = "可以连接";
             }
-            catch 
+            catch
             {
                 reminder = "数据库ip错误";
-                finish = false;             
+                finish = false;
             }
 
             //判断数据库存在
             if (finish)
             {
-                strsql = "if exists(select * from sysdatabases where name= '"+InitialCatalog+" ')  select  1 as id  else  select 0 as id;";
+                strsql = "if exists(select * from sysdatabases where name= '" + InitialCatalog + " ')  select  1 as id  else  select 0 as id;";
                 using (SqlConnection sql = new SqlConnection($"Data Source={DataSource};Integrated Security=True"))
                 {
                     sql.Open();
-                    using (SqlCommand cmd = new SqlCommand(strsql , sql))
+                    using (SqlCommand cmd = new SqlCommand(strsql, sql))
                     {
                         using (SqlDataReader read = cmd.ExecuteReader())
                         {
                             try
                             {
                                 if (!read.HasRows)
-                                    strsql= null;
+                                    strsql = null;
                                 const string id = "id";
                                 int idindex = read.GetOrdinal(id);
                                 while (read.Read())
@@ -132,20 +132,20 @@ namespace 个人信息数据库principalComputer.model
                         }
                     }
                 }
-                if (string.Equals(strsql , "1"))
+                if (string.Equals(strsql, "1"))
                 {
                     return;
                 }
 
                 //
-                strsql = "create database "+InitialCatalog+" on primary( name='"+InitialCatalog+@"',filename='"+ AppDomain.CurrentDomain.BaseDirectory + InitialCatalog+".mdf',size=5MB,filegrowth=10MB,maxsize=100MB)log on(name='"+InitialCatalog+@"_log',filename='" + AppDomain.CurrentDomain.BaseDirectory + InitialCatalog +".ldf',size=3MB,filegrowth=3%,maxsize=20MB);";
+                strsql = "create database " + InitialCatalog + " on primary( name='" + InitialCatalog + @"',filename='" + AppDomain.CurrentDomain.BaseDirectory + InitialCatalog + ".mdf',size=5MB,filegrowth=10MB,maxsize=100MB)log on(name='" + InitialCatalog + @"_log',filename='" + AppDomain.CurrentDomain.BaseDirectory + InitialCatalog + ".ldf',size=3MB,filegrowth=3%,maxsize=20MB);";
 
                 using (SqlConnection sql = new SqlConnection($"Data Source={DataSource};Integrated Security=True"))
                 {
                     sql.Open();
-                    using (SqlCommand cmd = new SqlCommand(strsql , sql))
+                    using (SqlCommand cmd = new SqlCommand(strsql, sql))
                     {
-                        cmd.ExecuteReader();                      
+                        cmd.ExecuteReader();
                     }
                 }
 
@@ -162,6 +162,10 @@ namespace 个人信息数据库principalComputer.model
                 write(strsql);
 
                 strsql = "use " + InitialCatalog + ";" + "CREATE TABLE property (id int NOT NULL IDENTITY (1, 1) PRIMARY KEY, terminal VARCHAR(100), PMONEY MONEY NOT NULL, MTIME DATE, CONTACTSID INT , FOREIGN KEY (CONTACTSID) REFERENCES CONTACTS(ID));";
+                write(strsql);
+
+                //创建视图
+                strsql = "use " + InitialCatalog + ";" + "CREATE VIEW vaddressbook AS select addressbook.id,NAME,CONTACT,CADDRESS,CITY,COMMENT from addressbook,CONTACTS where addressbook.CONTACTSID = CONTACTS.ID;";
                 write(strsql);
 
                 foreach (var t in lajiaddressBook())
@@ -197,7 +201,7 @@ namespace 个人信息数据库principalComputer.model
             using (SqlConnection sql = new SqlConnection(connect))
             {
                 sql.Open();
-                using (SqlCommand cmd = new SqlCommand(sqlAddressBook , sql))
+                using (SqlCommand cmd = new SqlCommand(sqlAddressBook, sql))
                 {
                     using (SqlDataReader read = cmd.ExecuteReader())
                     {
@@ -214,11 +218,11 @@ namespace 个人信息数据库principalComputer.model
                         {
                             caddressBook temp = new caddressBook
                             {
-                                id = read.GetInt32(idindex).ToString() ,
-                                name = read.GetString(nameindex).Trim() ,
-                                contact = read.GetString(contactindex).Trim() ,
-                                address = read.GetString(caddressindex).Trim() ,
-                                city = read.GetString(cityindex).Trim() ,
+                                id = read.GetInt32(idindex).ToString(),
+                                name = read.GetString(nameindex).Trim(),
+                                contact = read.GetString(contactindex).Trim(),
+                                address = read.GetString(caddressindex).Trim(),
+                                city = read.GetString(cityindex).Trim(),
                                 comment = read.GetString(commentindex).Trim()
                             };
                             addressBook.Add(temp);
@@ -246,7 +250,7 @@ namespace 个人信息数据库principalComputer.model
             using (SqlConnection sql = new SqlConnection(connect))
             {
                 sql.Open();
-                using (SqlCommand cmd = new SqlCommand(strsql , sql))
+                using (SqlCommand cmd = new SqlCommand(strsql, sql))
                 {
                     using (SqlDataReader read = cmd.ExecuteReader())
                     {
@@ -261,10 +265,10 @@ namespace 个人信息数据库principalComputer.model
                         {
                             diary.Add(new cdiary()
                             {
-                                id = DBNullstring<int>(read[id]) ,
-                                MTIME = DBNullstring<DateTime>(read[MTIME]) ,
-                                PLACE = DBNullstring<string>(read[PLACE]) ,
-                                incident = DBNullstring<string>(read[INCIDENT]) ,
+                                id = DBNullstring<int>(read[id]),
+                                MTIME = DBNullstring<DateTime>(read[MTIME]),
+                                PLACE = DBNullstring<string>(read[PLACE]),
+                                incident = DBNullstring<string>(read[INCIDENT]),
                                 CONTACTSID = DBNullstring<string>(read[CONTACTSID])
                             });
                             //diary.Add(new cdiary()
@@ -299,7 +303,7 @@ namespace 个人信息数据库principalComputer.model
             using (SqlConnection sql = new SqlConnection(connect))
             {
                 sql.Open();
-                using (SqlCommand cmd = new SqlCommand(strsql , sql))
+                using (SqlCommand cmd = new SqlCommand(strsql, sql))
                 {
                     using (SqlDataReader read = cmd.ExecuteReader())
                     {
@@ -332,10 +336,10 @@ namespace 个人信息数据库principalComputer.model
                                 //PLACE = read.GetString(PLACEindex) ,
                                 //incident = read.GetString(INCIDENTindex) ,
                                 //CONTACTSID = read.GetString(CONTACTSIDindex)
-                                id = id ,
-                                MTIME = MTIME ,//.Trim() ,
-                                PLACE = PLACE ,//.Trim() ,
-                                incident = INCIDENT ,//.Trim() ,
+                                id = id,
+                                MTIME = MTIME,//.Trim() ,
+                                PLACE = PLACE,//.Trim() ,
+                                incident = INCIDENT,//.Trim() ,
                                 CONTACTSID = CONTACTSID//.Trim()
                             });
                         }
@@ -373,7 +377,7 @@ SELECT [property].[id]
             using (SqlConnection sql = new SqlConnection(connect))
             {
                 sql.Open();
-                using (SqlCommand cmd = new SqlCommand(strsql , sql))
+                using (SqlCommand cmd = new SqlCommand(strsql, sql))
                 {
                     using (SqlDataReader read = cmd.ExecuteReader())
                     {
@@ -383,10 +387,10 @@ SELECT [property].[id]
                         {
                             property.Add(new cproperty()
                             {
-                                id = DBNullstring<int>(read["id"]) ,
-                                terminal = DBNullstring<string>(read["terminal"]) ,
-                                PMONEY = DBNullstring<decimal>(read["PMONEY"]) ,
-                                MTIME = DBNullstring<DateTime>(read["MTIME"]) ,
+                                id = DBNullstring<int>(read["id"]),
+                                terminal = DBNullstring<string>(read["terminal"]),
+                                PMONEY = DBNullstring<decimal>(read["PMONEY"]),
+                                MTIME = DBNullstring<DateTime>(read["MTIME"]),
                                 CONTACTSID = DBNullstring<string>(read["NAME"])
                             });
                         }
@@ -425,22 +429,22 @@ SELECT [property].[id]
             //返回addressBook
             ObservableCollection<caddressBook> addressBook = newaddressBook();
             string json = JsonConvert.SerializeObject(addressBook);
-            ctransmitter transmitter = new ctransmitter(-1 , ecommand.addressBook , json);
+            ctransmitter transmitter = new ctransmitter(-1, ecommand.addressBook, json);
             _principal_computer.send(transmitter.ToString());
             System.Threading.Thread.Sleep(1000);
             ObservableCollection<cdiary> diary = newdiary();
             json = JsonConvert.SerializeObject(diary);
-            transmitter = new ctransmitter(-1 , ecommand.diary , json);
+            transmitter = new ctransmitter(-1, ecommand.diary, json);
             _principal_computer.send(transmitter.ToString());
             System.Threading.Thread.Sleep(1000);
             ObservableCollection<cmemorandum> memorandum = newmemorandum();
             json = JsonConvert.SerializeObject(memorandum);
-            transmitter = new ctransmitter(-1 , ecommand.memorandum , json);
+            transmitter = new ctransmitter(-1, ecommand.memorandum, json);
             _principal_computer.send(transmitter.ToString());
             System.Threading.Thread.Sleep(1000);
             ObservableCollection<cproperty> property = newproperty();
             json = JsonConvert.SerializeObject(property);
-            transmitter = new ctransmitter(-1 , ecommand.property , json);
+            transmitter = new ctransmitter(-1, ecommand.property, json);
             _principal_computer.send(transmitter.ToString());
         }
 
@@ -670,7 +674,7 @@ SELECT [property].[id]
             using (SqlConnection sql = new SqlConnection(connect))
             {
                 sql.Open();
-                using (SqlCommand cmd = new SqlCommand(strsql , sql))
+                using (SqlCommand cmd = new SqlCommand(strsql, sql))
                 {
                     using (SqlDataReader read = cmd.ExecuteReader())
                     {
@@ -726,10 +730,10 @@ SELECT [property].[id]
         private string ranstr(int n)
         {
             StringBuilder str = new StringBuilder();
-            int[] 中文 = new int[2] { 19968 , 40895 };
+            int[] 中文 = new int[2] { 19968, 40895 };
             for (int i = 0; i < n; i++)
             {
-                str.Append(Convert.ToChar(ran.Next(中文[0] , 中文[1])));
+                str.Append(Convert.ToChar(ran.Next(中文[0], 中文[1])));
             }
             return str.ToString();
         }
@@ -771,7 +775,7 @@ SELECT [property].[id]
         {
             List<caddressBook> addressBook = new List<caddressBook>();
             List<string> chinacity = new List<string>();
-            chinacity.AddRange(sql.城市.Split(new char[2] { '\r' , '\n' }));
+            chinacity.AddRange(sql.城市.Split(new char[2] { '\r', '\n' }));
 
             for (int i = 0; i < chinacity.Count; i++)
             {
@@ -793,11 +797,11 @@ SELECT [property].[id]
             {
                 temp = new caddressBook()
                 {
-                    id = i.ToString() ,
-                    name = ranstr(3) ,
-                    contact = ran.Next().ToString() ,
-                    address = chinacity[ran.Next(chinacity.Count)] ,
-                    city = chinacity[ran.Next(chinacity.Count)] ,
+                    id = i.ToString(),
+                    name = ranstr(3),
+                    contact = ran.Next().ToString(),
+                    address = chinacity[ran.Next(chinacity.Count)],
+                    city = chinacity[ran.Next(chinacity.Count)],
                     comment = "随机的名，作为测试"
                 };
                 addressBook.Add(temp);
@@ -809,7 +813,7 @@ SELECT [property].[id]
         {
             List<cdiary> diary = new List<cdiary>();
             List<string> temp = new List<string>();
-            temp.AddRange(sql.事件.Split(new char[2] { '\r' , '\n' }));
+            temp.AddRange(sql.事件.Split(new char[2] { '\r', '\n' }));
             for (int i = 0; i < temp.Count; i++)
             {
                 if (string.IsNullOrEmpty(temp[i]))
@@ -824,7 +828,7 @@ SELECT [property].[id]
             }
 
             List<string> chinacity = new List<string>();
-            chinacity.AddRange(sql.城市.Split(new char[2] { '\r' , '\n' }));
+            chinacity.AddRange(sql.城市.Split(new char[2] { '\r', '\n' }));
 
             for (int i = 0; i < chinacity.Count; i++)
             {
@@ -840,17 +844,17 @@ SELECT [property].[id]
             }
 
             int n = 10;
-            DateTime time = new DateTime(year: 2012 , month: 1 , day: 1 , hour: 0 , second: 0 , minute: 0);
+            DateTime time = new DateTime(year: 2012, month: 1, day: 1, hour: 0, second: 0, minute: 0);
 
             for (int i = 0; i < n; i++)
             {
                 time = time.AddDays(ran.Next() % 10);
                 diary.Add(new cdiary()
                 {
-                    MTIME = time.ToString() ,
-                    PLACE = chinacity[ran.Next(chinacity.Count)] ,
-                    incident = temp[ran.Next(temp.Count)] ,
-                    CONTACTSID = ran.Next(20 , 201).ToString()
+                    MTIME = time.ToString(),
+                    PLACE = chinacity[ran.Next(chinacity.Count)],
+                    incident = temp[ran.Next(temp.Count)],
+                    CONTACTSID = ran.Next(20, 201).ToString()
                 });
             }
 
@@ -864,7 +868,7 @@ SELECT [property].[id]
         {
             List<cmemorandum> memorandum = new List<cmemorandum>();
             List<string> temp = new List<string>();
-            temp.AddRange(sql.incident.Split(new char[2] { '\r' , '\n' }));
+            temp.AddRange(sql.incident.Split(new char[2] { '\r', '\n' }));
             for (int i = 0; i < temp.Count; i++)
             {
                 if (string.IsNullOrEmpty(temp[i]))
@@ -879,7 +883,7 @@ SELECT [property].[id]
             }
 
             List<string> chinacity = new List<string>();
-            chinacity.AddRange(sql.城市.Split(new char[2] { '\r' , '\n' }));
+            chinacity.AddRange(sql.城市.Split(new char[2] { '\r', '\n' }));
 
             for (int i = 0; i < chinacity.Count; i++)
             {
@@ -895,14 +899,14 @@ SELECT [property].[id]
             }
 
 
-            DateTime time = new DateTime(year: 2012 , month: 1 , day: 1 , hour: 0 , second: 0 , minute: 0);
+            DateTime time = new DateTime(year: 2012, month: 1, day: 1, hour: 0, second: 0, minute: 0);
 
             for (int i = 0; true; i++)
             {
                 time = time.AddDays(ran.Next() % 10);
                 memorandum.Add(new cmemorandum()
                 {
-                    MTIME = time.ToString() ,
+                    MTIME = time.ToString(),
                     //PLACE = chinacity[ran.Next(chinacity.Count)] ,
                     incident = temp[i]
                     //CONTACTSID = ran.Next(20 , 201).ToString()
@@ -921,7 +925,7 @@ SELECT [property].[id]
 
         private void lajiproperty()
         {
-            DateTime time = new DateTime(year: 2012 , month: 1 , day: 1 , hour: 0 , second: 0 , minute: 0);
+            DateTime time = new DateTime(year: 2012, month: 1, day: 1, hour: 0, second: 0, minute: 0);
             List<cproperty> property = new List<cproperty>();
             int n = 100;
             int money;
@@ -938,8 +942,8 @@ SELECT [property].[id]
                 }
                 property.Add(new cproperty()
                 {
-                    MTIME = time.ToString() ,
-                    PMONEY = ( money * ran.Next(10 , 100) ).ToString()
+                    MTIME = time.ToString(),
+                    PMONEY = (money * ran.Next(10, 100)).ToString()
                 });
             }
 
@@ -949,7 +953,7 @@ SELECT [property].[id]
             }
         }
 
-        private void implement(int id , ecommand command , string str)
+        private void implement(int id, ecommand command, string str)
         {
             caddressBook addressbook;
             cdiary diary;
@@ -1062,7 +1066,7 @@ SELECT [property].[id]
         {
             try
             {
-                return obj == System.DBNull.Value ? " " : ( (T)obj ).ToString();
+                return obj == System.DBNull.Value ? " " : ((T)obj).ToString();
             }
             catch
             {
@@ -1077,7 +1081,7 @@ SELECT [property].[id]
     /// </summary>
     public class ctransmitter
     {
-        public ctransmitter(int id , ecommand command , string str/*,int ran*/)
+        public ctransmitter(int id, ecommand command, string str/*,int ran*/)
         {
             this.id = id.ToString();
             this.command = command.ToString();

@@ -17,7 +17,7 @@ namespace 个人信息数据库principalComputer
 
         public void ce()
         {
-            _model.reminder = "林德熙\r\n3113006277";
+           // _model.reminder = "林德熙\r\n3113006277";
             _model.reminder = string.Format("数据库ip{0}\r\n数据库名{1}\r\n连接" , DataSource , InitialCatalog);
             
             _model.lianjie();

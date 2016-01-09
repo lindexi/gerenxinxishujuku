@@ -113,6 +113,7 @@ namespace 个人信息数据库.ViewModel
             if (!diary.accord)
             {
                 warn = "输入信息有误";
+                return;
             }
 
             if (diary.Equals(_item))

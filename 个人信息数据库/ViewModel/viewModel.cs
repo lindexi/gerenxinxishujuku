@@ -18,26 +18,9 @@ namespace 个人信息数据库
     public partial class viewModel : notify_property
     {
         public viewModel()
-        {
-            //连接字符串
-
-            //使用windows身份验证方式
-            //string constr = "Data Source=steve-pc;Initial Catalog=itcast2013;Integrated Security=true";
-            //"server=.;database=itcast2013;uid=sa;pwd=sa"
+        {          
             _model = new model.model();
-            _model.PropertyChanged += _model_PropertyChanged;
-            //reminder = "运行";
-
-            //ReceiveAction = str =>
-            //{
-            //    string temp= str.Trim('\0' , ' ');
-            //    if (!string.IsNullOrEmpty(temp))
-            //    {
-            //        reminder = temp;
-            //    }
-            //};
-
-            //slave_computer();            
+            _model.PropertyChanged += _model_PropertyChanged;                  
         }
 
         public new string reminder
@@ -197,17 +180,6 @@ namespace 个人信息数据库
                     comment =" "
                 }
             };
-
-        //private string DataSource
-        //{
-        //    set;
-        //    get;
-        //} = "QQLINDEXI\\SQLEXPRESS";
-        //private string InitialCatalog
-        //{
-        //    set;
-        //    get;
-        //} = "grxx";
         public model.model _model
         {
             set;
